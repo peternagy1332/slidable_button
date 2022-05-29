@@ -2,6 +2,7 @@
 enum SlidableButtonPosition {
   left,
   right,
+  center,
 
   /// Only available if `tristate` is true
   sliding,

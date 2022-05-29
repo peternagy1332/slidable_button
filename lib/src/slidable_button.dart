@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 
 import 'enum/slidable_button_position.dart';
 import 'slidable_button_clipper.dart';
-import 'slidable_button_simulation.dart';
 
 class SlidableButton extends StatefulWidget {
   /// Label of the button.
@@ -241,33 +241,47 @@ class _SlidableButtonState extends State<SlidableButton>
   }
 
   void _onDragEnd(DragEndDetails details) {
-    final extent = _container!.size.width - _positioned!.size.width;
-    double fractionalVelocity = (details.primaryVelocity! / extent).abs();
-    if (fractionalVelocity < 0.5) {
-      fractionalVelocity = 0.5;
-    }
+    // final extent = _container!.size.width - _positioned!.size.width;
+    // double fractionalVelocity = (details.primaryVelocity! / extent).abs();
+    // if (fractionalVelocity < 0.5) {
+    //   fractionalVelocity = 0.5;
+    // }
 
-    double acceleration, velocity;
-    if (_controller.value >= widget.completeSlideAt) {
-      acceleration = 0.5;
-      velocity = fractionalVelocity;
-    } else {
+    double fractionalVelocity = 2;
+
+    double acceleration, velocity, endingPosition;
+    SlidableButtonPosition position;
+
+    if (_controller.value <= 0.25) {
       acceleration = -0.5;
       velocity = -fractionalVelocity;
+      endingPosition = 0.0;
+      position = SlidableButtonPosition.left;
+    } else if (_controller.value > 0.25 && _controller.value <= 0.5) {
+      acceleration = 0.5;
+      velocity = fractionalVelocity;
+      endingPosition = 0.5;
+      position = SlidableButtonPosition.center;
+    } else if (_controller.value > 0.5 && _controller.value <= 0.75) {
+      acceleration = -0.5;
+      velocity = -fractionalVelocity;
+      endingPosition = 0.5;
+      position = SlidableButtonPosition.center;
+    } else {
+      acceleration = 0.5;
+      velocity = -fractionalVelocity;
+      endingPosition = 1.0;
+      position = SlidableButtonPosition.right;
     }
 
-    final simulation = SlidableSimulation(
-      acceleration,
+    final simulation = SpringSimulation(
+      SpringDescription(mass: 1, stiffness: 1000, damping: 100),
       _controller.value,
-      1.0,
+      endingPosition,
       velocity,
     );
 
     _controller.animateWith(simulation).whenComplete(() {
-      SlidableButtonPosition position = _controller.value == 0
-          ? SlidableButtonPosition.left
-          : SlidableButtonPosition.right;
-
       if (widget.isRestart && widget.initialPosition != position) {
         _initialPositionController();
       }

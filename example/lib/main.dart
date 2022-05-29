@@ -28,7 +28,7 @@ class _SlidableButtonDemoState extends State<SlidableButtonDemo> {
             Text('Slide this button to left or right.'),
             SizedBox(height: 16.0),
             SlidableButton(
-              width: MediaQuery.of(context).size.width / 3,
+              width: MediaQuery.of(context).size.width,
               buttonWidth: 60.0,
               color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
               buttonColor: Theme.of(context).primaryColor,
@@ -40,6 +40,7 @@ class _SlidableButtonDemoState extends State<SlidableButtonDemo> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Left'),
+                    Text('Center'),
                     Text('Right'),
                   ],
                 ),
